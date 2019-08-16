@@ -27,19 +27,36 @@ var budgetController =(function(a){
 return {
     addItem : function(type,description,value){
         var newItem, ID;
-        ID = 0;
+        //[1,2,3,4,5] next id = 6
+        //[1,2,5,8] next id= 9
+        // id = id of last element +1
+     //create new id
+     if(data.allItems[type].length > 0)
+     {
+        ID = data.allItems[type][data.allItems[type].length - 1].id +1;
+     }
+     else{
+         ID = 0;
+     }
+    //create new item based on exp or inc  
 
         if (type ==="exp"){
             newItem = new Expense(ID,des,val);
+            data.allItems.exp.push(newItem);
+
         }
         else if(type ==="inc"){
-            newItem = new Income(ID,des.,val);
+            newItem = new Income(ID,des,val);
             data.allItems.inc.push(newItem);
         }
-                    data.allItems.type.push(newItem);
-
-        id++;
-    }
+    //Pushing it into data structure    
+                    data.allItems[type].push(newItem);
+    //Return the new element
+            return newItem
+         },
+         testing: function(){
+             console.log(data);
+         }
 } 
 
 
@@ -73,9 +90,9 @@ var uiController = (function(){
 
 
 //App controller
-var controller = (function(budg,ui){
+var controller = (function(budgetCtrl,uiCtrl){
 var setUpEventListeners = function(){
-     var DOM = ui.getDOMstrings();
+     var DOM = uiCtrl.getDOMstrings();
 
     document.querySelector(DOM.inputButton).addEventListener("click",ctrlAddItem);
 
@@ -88,11 +105,14 @@ var setUpEventListeners = function(){
 
  }   
 function ctrlAddItem(){
+    var input , newItem;
  
     // 1.Get the field input data
-    var input = ui.getInput();
+     input = uiCtrl.getInput();
     // 2.Transfer that data to the budget controller
+    newItem = budgetCtrl.addItem(input.type,input.description,input.value);
     // 3.Update UI with new item added
+
     // 4.Calculate the budget
     // 5.Display the total in UI
 
