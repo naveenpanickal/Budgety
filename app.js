@@ -70,7 +70,7 @@ return {
 var uiController = (function(){
    var DOMstrings = {
        inputType : ".add__type",
-       inputDescrption : ".add__description",
+       inputDescription : ".add__description",
        inputValue : ".add__value",
        inputButton : ".add__btn",
        incomeContainer:".income__list",
@@ -81,7 +81,7 @@ var uiController = (function(){
         getInput:function(){
             return{
                  type : document.querySelector(DOMstrings.inputType).value,
-                 description : document.querySelector(DOMstrings.inputDescrption).value,
+                 description : document.querySelector(DOMstrings.inputDescription).value,
                  value : document.querySelector(DOMstrings.inputValue).value      }
     },
        getDOMstrings:function(){
@@ -104,6 +104,20 @@ var uiController = (function(){
         newHtml = newHtml.replace("%value%",obj.value);
         //Insert HTML into the dom
         document.querySelector(element).insertAdjacentHTML("beforeend",newHtml);
+    },
+    clearFields:function(){
+        console.log("clearing fields");
+        var fields,fieldsArr;
+        fields = document.querySelectorAll(DOMstrings.inputDescription +", "+ DOMstrings.inputValue);
+        fieldsArr = Array.prototype.slice.call(fields);
+        fieldsArr.forEach(function(current,index,array){
+            console.log(current.value);
+            current.value = "";
+            
+
+        });
+
+        fieldsArr[0].focus();
     }
 };
 
@@ -134,8 +148,11 @@ function ctrlAddItem(){
     newItem = budgetCtrl.addItem(input.type,input.description,input.value);
     // 3.Update UI with new item added
      UICtrl.addListItem(newItem,input.type);
-    // 4.Calculate the budget
-    // 5.Display the total in UI
+    //4.Clear input fields
+    UICtrl.clearFields();
+
+    // 5.Calculate the budget
+    // 6.Display the total in UI
 
 }
 return{
