@@ -22,7 +22,9 @@ var budgetController =(function(a){
      totals:{
          exp:0,
          inc:0
-     }
+     },
+     budget:0,
+     perOfInc:-1 //  percentage of income that we spent
  }
 return {
     addItem : function(type,des,val){
@@ -61,7 +63,34 @@ return {
          calculateBudget:function(){
              var total;
              total = data.totals.inc - data.totals.exp;
-             console.log(total);
+             data.budget= total;
+             if(data.totals.inc > data.totals.exp){
+             data.perOfInc = Math.round(data.totals.exp/data.totals.inc*100);
+             }
+             else if(data.totals.inc < data.totals.exp){
+                data.perOfInc = Math.round(data.totals.exp/data.totals.inc*100);
+             }
+             else{
+                 data.perOfInc = -1;
+
+             }
+            
+
+             
+         },
+         getBudget:function(){
+       /*      console.log(data.budget);
+             console.log(data.totals.inc);
+             console.log(data.totals.exp);
+             console.log(data.perOfInc);
+*/
+             return{
+                 budget:data.budget,
+                 income:data.totals.inc,
+                 expense:data.totals.exp,
+                 percentage:data.perOfInc
+             }
+
          }
 } 
 })();
@@ -76,7 +105,11 @@ var uiController = (function(){
        inputValue : ".add__value",
        inputButton : ".add__btn",
        incomeContainer:".income__list",
-       expensesContainer:".expenses__list"
+       expensesContainer:".expenses__list",
+       budgetValue:".budget__value",
+       incomeValue:".budget__income--value",
+       expenseValue:".budget__expenses--value",
+       expensePercentage:".budget__expenses--percentage"
    };
     
     return {
@@ -98,7 +131,7 @@ var uiController = (function(){
         }
         else if (type==="exp"){
             element = DOMstrings.expensesContainer;
-            html= '<div class="item clearfix" id="expense-%id%"><div class="item__description">%description%</div><div class="right clearfix"><div class="item__value">- %value%</div><div class="item__percentage">21%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>'
+            html= '<div class="item clearfix" id="expense-%id%"><div class="item__description">%description%</div><div class="right clearfix"><div class="item__value">- %value%</div><div class="item__percentage">%perc%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>'
         }
         //Replace the placeholder with actual data
         newHtml = html.replace("%id%",obj.id);
@@ -117,6 +150,18 @@ var uiController = (function(){
             });
 
         fieldsArr[0].focus();
+    },
+    displayBudget:function(budget,income,expense,percentage){
+        console.log(budget);
+        console.log(income);
+        console.log(expense);
+        console.log(percentage);
+
+        document.querySelector(DOMstrings.budgetValue).textContent= budget;
+        document.querySelector(DOMstrings.incomeValue).textContent= income;
+        document.querySelector(DOMstrings.expenseValue).textContent= expense;
+        document.querySelector(DOMstrings.expensePercentage).textContent= percentage+"%";
+
     }
 };
 })();
@@ -138,9 +183,17 @@ var setUpEventListeners = function(){
     });
 }   
 function updateBudget(){
+    var budget,inc,exp,perc;
     // 1. Calculate the budget
+    budgetCtrl.calculateBudget();
     // 2. Return the budget 
+    budget = budgetCtrl.getBudget().budget;
+    inc = budgetCtrl.getBudget().income;
+    exp = budgetCtrl.getBudget().expense;
+    perc = budgetCtrl.getBudget().percentage;
     // 3. Display the budget on UI
+    UICtrl.displayBudget(budget,inc,exp,perc);
+
 }
 function ctrlAddItem(){
     var input , newItem;
@@ -154,7 +207,6 @@ function ctrlAddItem(){
      UICtrl.addListItem(newItem,input.type);
     //4.Clear input fields
     UICtrl.clearFields();
-
     // 5.Calculate and update the budget
     updateBudget();   
      }
