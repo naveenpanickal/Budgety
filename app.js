@@ -50,7 +50,6 @@ return {
         else if(type ==="inc"){
             newItem = new Income(ID,des,val);
             data.totals.inc += val;
-
         } 
     //Pushing it into data structure    
                     data.allItems[type].push(newItem);
@@ -67,23 +66,11 @@ return {
              if(data.totals.inc > data.totals.exp){
              data.perOfInc = Math.round(data.totals.exp/data.totals.inc*100);
              }
-             else if(data.totals.inc < data.totals.exp){
-                data.perOfInc = Math.round(data.totals.exp/data.totals.inc*100);
-             }
              else{
                  data.perOfInc = -1;
-
-             }
-            
-
-             
-         },
+                }
+            },
          getBudget:function(){
-       /*      console.log(data.budget);
-             console.log(data.totals.inc);
-             console.log(data.totals.exp);
-             console.log(data.perOfInc);
-*/
              return{
                  budget:data.budget,
                  income:data.totals.inc,
@@ -111,7 +98,6 @@ var uiController = (function(){
        expenseValue:".budget__expenses--value",
        expensePercentage:".budget__expenses--percentage"
    };
-    
     return {
         getInput:function(){
             return{
@@ -148,20 +134,18 @@ var uiController = (function(){
         fieldsArr.forEach(function(current,index,array){
             current.value = "";
             });
-
         fieldsArr[0].focus();
     },
-    displayBudget:function(budget,income,expense,percentage){
-        console.log(budget);
-        console.log(income);
-        console.log(expense);
-        console.log(percentage);
-
-        document.querySelector(DOMstrings.budgetValue).textContent= budget;
-        document.querySelector(DOMstrings.incomeValue).textContent= income;
-        document.querySelector(DOMstrings.expenseValue).textContent= expense;
-        document.querySelector(DOMstrings.expensePercentage).textContent= percentage+"%";
-
+    displayBudget:function(obj){
+        document.querySelector(DOMstrings.budgetValue).textContent= obj.budget;
+        document.querySelector(DOMstrings.incomeValue).textContent= obj.income;
+        document.querySelector(DOMstrings.expenseValue).textContent= obj.expense;
+    if(obj.percentage > 0){
+        document.querySelector(DOMstrings.expensePercentage).textContent= obj.percentage+"%";
+    }
+    else{
+        document.querySelector(DOMstrings.expensePercentage).textContent= "---" 
+    }
     }
 };
 })();
@@ -171,12 +155,10 @@ var uiController = (function(){
 
 
 var controller = (function(budgetCtrl,UICtrl){
-var setUpEventListeners = function(){
-     var DOM = UICtrl.getDOMstrings();
-
-    document.querySelector(DOM.inputButton).addEventListener("click",ctrlAddItem);
-
-    document.addEventListener("keypress",function(event){
+    var setUpEventListeners = function(){
+        var DOM = UICtrl.getDOMstrings();
+        document.querySelector(DOM.inputButton).addEventListener("click",ctrlAddItem);
+        document.addEventListener("keypress",function(event){
         if(event.keyCode==13){
             ctrlAddItem(); 
         }
@@ -186,14 +168,10 @@ function updateBudget(){
     var budget,inc,exp,perc;
     // 1. Calculate the budget
     budgetCtrl.calculateBudget();
-    // 2. Return the budget 
-    budget = budgetCtrl.getBudget().budget;
-    inc = budgetCtrl.getBudget().income;
-    exp = budgetCtrl.getBudget().expense;
-    perc = budgetCtrl.getBudget().percentage;
+    // 2. Return the budget
+    budget = budgetCtrl.getBudget();
     // 3. Display the budget on UI
-    UICtrl.displayBudget(budget,inc,exp,perc);
-
+    UICtrl.displayBudget(budget);
 }
 function ctrlAddItem(){
     var input , newItem;
@@ -212,7 +190,15 @@ function ctrlAddItem(){
      }
 }
 return{
-    init:function(){setUpEventListeners() ;
+    init:function(){
+    setUpEventListeners() ;
+    UICtrl.displayBudget({
+        budget:0,
+        income:0,
+        expense:0,
+        percentage:-1
+    }
+);
     console.log("applcation has started"); 
 }
 }
