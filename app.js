@@ -6,12 +6,23 @@ var budgetController =(function(a){
      this.id = id;
      this.description =  description;
      this.value = value;
- }
+     this.percentage = -1;
+ };
+ Expense.prototype.CalculatePerc =  function(totalIncome){
+     if(totalIncome > 0 ){
+     this.percentage = Math.round((this.value/totalIncome)*100);}
+     else{
+         this.percentage = -1;
+     }
+ };
+ Expense.prototype.getPercentage = function(){
+     return this.percentage;
+ };
  var Income =  function(id,description,value){
      this.id = id;
      this.description =  description;
      this.value = value;
- }
+ };
  //var allExpenses = []; it is better to put everything in a single data struture
  //var allIncome = [];
  var calculateTotal = function(type){
@@ -34,34 +45,34 @@ var budgetController =(function(a){
      perOfInc:-1 //  percentage of income that we spent
  }
 return {
-    addItem : function(type,des,val){
-        var newItem, ID;
-        //[1,2,3,4,5] next id = 6
-        //[1,2,5,8] next id= 9
-        // id = id of last element +1
-     //create new id
-     if(data.allItems[type].length > 0)
-     {
-        ID = data.allItems[type][data.allItems[type].length - 1].id +1;
-     }
-     else{
-         ID = 0;
-     }
-    //create new item based on exp or inc  
+        addItem : function(type,des,val){
+            var newItem, ID;
+            //[1,2,3,4,5] next id = 6
+            //[1,2,5,8] next id= 9
+            // id = id of last element +1
+             //create new id
+            if(data.allItems[type].length > 0)
+            {
+            ID = data.allItems[type][data.allItems[type].length - 1].id +1;
+            }
+            else{
+                ID = 0;
+            }
+            //create new item based on exp or inc  
 
-        if (type ==="exp"){
+            if (type ==="exp"){
             newItem = new Expense(ID,des,val);
 
-        }
-        else if(type ==="inc"){
+            }   
+            else if(type ==="inc"){
             newItem = new Income(ID,des,val);
-        } 
-    //Pushing it into data structure    
-                    data.allItems[type].push(newItem);
-    //Return the new element
+            } 
+            //Pushing it into data structure    
+             data.allItems[type].push(newItem);
+            //Return the new element
             return newItem
-         },
-         deleteItem : function(type,id){
+            },
+        deleteItem : function(type,id){
              var ids,index;
              ids = data.allItems[type].map(function(current){
                 return current.id; 
@@ -72,11 +83,11 @@ return {
              if(index!== -1){
                  data.allItems[type].splice(index,1);
              }
-         },
-         testing: function(){
+            },
+        testing: function(){
              console.log(data);
-         },
-         calculateBudget:function(){
+            },
+        calculateBudget:function(){
              //Calculate total income and expenses
              calculateTotal("inc");
              calculateTotal("exp");
@@ -90,7 +101,19 @@ return {
                  data.perOfInc = -1;
                 }
             },
-         getBudget:function(){
+        calculatePercentages: function(){
+             data.allItems.exp.forEach(function(cur){
+                 cur.CalculatePerc(data.totals.inc);
+             });
+
+                },
+        getPercentages:function(){
+                var allPerc = data.allItems.exp.map(function(cur){
+                    return cur.getPercentage();
+                })
+                return allPerc;
+            },
+        getBudget:function(){
              return{
                  budget:data.budget,
                  income:data.totals.inc,
@@ -201,6 +224,14 @@ function updateBudget(){
     // 3. Display the budget on UI
     UICtrl.displayBudget(budget);
 }
+var updatePercentage = function(){
+    // 1. Calculate the percentages
+          budgetCtrl.calculatePercentages();
+    // 2. read the percentages from the budget controller
+         var percentages = budgetCtrl.getPercentages();
+    // 3. Update UI with the new percantages
+    console.log(percentages);
+} 
 var ctrlAddItem= function(){
     var input , newItem;
  
@@ -214,7 +245,9 @@ var ctrlAddItem= function(){
     //4.Clear input fields
     UICtrl.clearFields();
     // 5.Calculate and update the budget
-    updateBudget();   
+    updateBudget();
+    // 6.Calculate and update the percentages
+    updatePercentage();    
      }
 };
 var ctrlDeleteItem= function(event){
@@ -234,6 +267,8 @@ var ctrlDeleteItem= function(event){
      
        // 3. Update and show the new budget
          updateBudget();
+       // 4.Calculate and update the percentages
+        updatePercentage();  
     }
 };
 
