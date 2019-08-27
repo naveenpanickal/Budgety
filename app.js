@@ -14,6 +14,13 @@ var budgetController =(function(a){
  }
  //var allExpenses = []; it is better to put everything in a single data struture
  //var allIncome = [];
+ var calculateTotal = function(type){
+     var sum = 0;
+     data.allItems[type].forEach(function(cur){
+         sum += cur.value;
+     });
+     data.totals[type]= sum;
+ }
  var data = {
      allItems:{
          exp:[],
@@ -44,12 +51,10 @@ return {
 
         if (type ==="exp"){
             newItem = new Expense(ID,des,val);
-            data.totals.exp +=  val;
 
         }
         else if(type ==="inc"){
             newItem = new Income(ID,des,val);
-            data.totals.inc += val;
         } 
     //Pushing it into data structure    
                     data.allItems[type].push(newItem);
@@ -72,9 +77,12 @@ return {
              console.log(data);
          },
          calculateBudget:function(){
-             var total;
-             total = data.totals.inc - data.totals.exp;
-             data.budget= total;
+             //Calculate total income and expenses
+             calculateTotal("inc");
+             calculateTotal("exp");
+             //calculate the budget :income - expenses
+             data.budget= data.totals.inc - data.totals.exp;
+             // calculate percentage of income that we spent
              if(data.totals.inc > data.totals.exp){
              data.perOfInc = Math.round(data.totals.exp/data.totals.inc*100);
              }
@@ -219,17 +227,13 @@ var ctrlDeleteItem= function(event){
         // 1. delete the item from the datastructure
          
          type = type.slice(0,3);
-         console.log(type);
-         console.log(ID);
          budgetCtrl.deleteItem(type,ID);
 
         // 2. Delete the item from UI
         UICtrl.deleteListItem(itemID);
-
-
-
-        // 3. Update and show the new budget
-
+     
+       // 3. Update and show the new budget
+         updateBudget();
     }
 };
 
