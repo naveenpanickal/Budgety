@@ -141,7 +141,8 @@ var uiController = (function(){
        expenseValue:".budget__expenses--value",
        expensePercentage:".budget__expenses--percentage",
        container:".container",
-       expensePercLabel:".item__percentage"
+       expensePercLabel:".item__percentage",
+       dateLabel:".budget__title--month"
    };
    var formatNumber = function(num,type){
        var numSplit,int,dec,sign;
@@ -244,6 +245,14 @@ var uiController = (function(){
                 current.textContent = "---";
             }
         });
+    },
+    displayDate:function(){
+        var now,month,months,year;
+        now = new Date();
+        year = now.getFullYear();
+        month= now.getMonth();
+        months=["January","February","March","April","May","June","July","August","September","October","November","December"];
+        document.querySelector(DOMstrings.dateLabel).textContent= months[month]+" "+year;    
     }
 };
 })();
@@ -323,6 +332,7 @@ var ctrlDeleteItem= function(event){
 
 return{
     init:function(){
+    UICtrl.displayDate();    
     setUpEventListeners() ;
     UICtrl.displayBudget({
         budget:0,
