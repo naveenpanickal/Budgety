@@ -127,6 +127,7 @@ body {
 .add__type {
     width: 55px;
     border: 1px solid #e7e7e7;
+    border-radius: 5px;
     height: 44px;
     font-size: 18px;
     color: inherit;
@@ -275,4 +276,3 @@ h2 {
 
 .unpaid .item__percentage { box-shadow: 0 2px 6px 0 rgba(0, 0, 0, 0.1); }
 .unpaid:hover .item__description { font-weight: 900; }
-
